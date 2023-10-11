@@ -9,3 +9,61 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id              Int        @id @default(autoincrement())
+  name            String
+  username        String     @unique
+  email           String     @unique
+  password        String?
+  premium         Boolean    @default(false)
+  profession      String?
+  about           String?
+  avatar          String?
+  gtihub          String
+  showGithubGraph Boolean    @default(false)
+  collectMessages Boolean    @default(true)
+  Socials         Socials[]
+  Links           Links[]
+  Projects        Projects[]
+  Message         Message[]
+  createdAt       DateTime   @default(now())
+}
+
+model Socials {
+  id     Int    @id @default(autoincrement())
+  user   User   @relation(fields: [userId], references: [id])
+  userId Int
+  type   String
+  handle String
+  clicks Int    @default(0)
+}
+
+model Links {
+  id     Int    @id @default(autoincrement())
+  user   User   @relation(fields: [userId], references: [id])
+  userId Int
+  title  String
+  url    String
+  clicks Int    @default(0)
+}
+
+model Projects {
+  id          Int     @id @default(autoincrement())
+  user        User    @relation(fields: [userId], references: [id])
+  userId      Int
+  title       String
+  description String?
+  repoLink    String?
+  webUrl      String
+  language    String
+  upVote      Int     @default(0)
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  sender    User     @relation(fields: [senderId], references: [id])
+  senderId  Int
+  createdAt DateTime @default(now())
+  message   String
+}
