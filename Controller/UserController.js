@@ -43,18 +43,21 @@ export const createUsers = async (req, res) => {
 export const getUsers = async (req, res) => {
     try {
         const users = await prisma.user.findMany()
-        return res.json({status: 200, message: 'Users fetched successfully!!', data: users})
+        return res.json({status: 200, message: 'Users fetched successfully!!', xprofiles: users.length, data: users})
     } catch (error) {
         console.log(error)
     }
 }
 
 export const getUser = async (req, res) => {
-    const {username} = req.params
+    const {id} = req.params
     try {
         const user = await prisma.user.findUnique({
             where: {
-                username: username
+                id: Number(id)
+            },
+            include: {
+                Socials: true
             }
         })
 
@@ -68,12 +71,12 @@ export const getUser = async (req, res) => {
 }
 
 export const updateUser = async (req, res) => {
-    const {username} = req.params
+    const {id} = req.params
     const {name, email, github, bannerColor, about, profession} = req.body
     try {
         const findUser = await prisma.user.findUnique({
             where: {
-                username: username
+                id: Number(id)
             }
         })
         if (!findUser) {
@@ -81,7 +84,7 @@ export const updateUser = async (req, res) => {
         }
         const updatedUser = await prisma.user.update({
             where: {
-                username: username
+                id: Number(id)
             },
             data: {
                 name: name,
@@ -100,11 +103,11 @@ export const updateUser = async (req, res) => {
 }
 
 export const deleteUser = async (req, res) => {
-    const {username} = req.params
+    const {id} = req.params
     try {
         const findUser = await prisma.user.findUnique({
             where: {
-                username: username
+                id: Number(id)
             }
         })
         if (!findUser) {
@@ -112,7 +115,7 @@ export const deleteUser = async (req, res) => {
         }
         const deletedUser = await prisma.user.delete({
             where: {
-                username: username
+                id: Number(id)
             }
         })
         return res.json({status: 200, message: 'User deleted successfully!!', data: deletedUser})
