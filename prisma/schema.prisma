@@ -20,7 +20,8 @@ model User {
   profession      String?
   about           String?
   avatar          String?
-  gtihub          String
+  github          String
+  bannerColor     String
   showGithubGraph Boolean    @default(false)
   collectMessages Boolean    @default(true)
   Socials         Socials[]
