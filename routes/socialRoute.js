@@ -4,7 +4,7 @@ import { createSocials, getSocials, getSocial, deleteSocial, updateSocial } from
 
 const router = Router()
 
-router.post('/', createSocials)
+router.post('/:id', createSocials)
 router.get('/:id', getSocials)
 router.get('/:id/:type', getSocial)
 router.delete('/:id/:type', deleteSocial)

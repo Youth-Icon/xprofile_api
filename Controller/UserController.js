@@ -1,7 +1,7 @@
 import prisma from '../DB/db.config.js'
 
 export const createUsers = async (req, res) => {
-    const {name, username, email, github, bannerColor, about, profession} = req.body
+    const { name, username, email, github, bannerColor, about, profession } = req.body
 
     try {
         const findUser = await prisma.user.findUnique({
@@ -16,10 +16,10 @@ export const createUsers = async (req, res) => {
         })
 
         if (findUser) {
-            return res.json({status: 409, message: 'Username already taken!!'})
+            return res.json({ status: 409, message: 'Username already taken!!' })
         }
         if (findEmail) {
-            return res.json({status: 408, message: 'Email already taken!!'})
+            return res.json({ status: 408, message: 'Email already taken!!' })
         }
 
         const newUser = await prisma.user.create({
@@ -31,10 +31,10 @@ export const createUsers = async (req, res) => {
                 bannerColor: bannerColor,
                 about: about,
                 profession: profession,
-                avatar: "https://avatars.githubusercontent.com/"+github,
+                avatar: "https://avatars.githubusercontent.com/" + github,
             }
         })
-        return res.json({status: 200, message: 'User created successfully!!', data: newUser})
+        return res.json({ status: 200, message: 'User created successfully!!', data: newUser })
     } catch (error) {
         console.log(error)
     }
@@ -42,37 +42,82 @@ export const createUsers = async (req, res) => {
 
 export const getUsers = async (req, res) => {
     try {
-        const users = await prisma.user.findMany()
-        return res.json({status: 200, message: 'Users fetched successfully!!', xprofiles: users.length, data: users})
+        const users = await prisma.user.findMany({
+            select: {
+                _count: {
+                    select: {
+                        Socials: true,
+                        Links: true,
+                        Projects: true
+                    },
+                },
+                id: true,
+                name: true,
+                username: true,
+                email: true,
+                github: true,
+                bannerColor: true,
+                about: true,
+                profession: true,
+                avatar: true,
+                createdAt: true
+            }
+        });
+        return res.json({ status: 200, xprofiles: users.length, data: users })
     } catch (error) {
         console.log(error)
     }
 }
 
 export const getUser = async (req, res) => {
-    const {id} = req.params
+    const { id } = req.params
     try {
         const user = await prisma.user.findUnique({
             where: {
                 id: Number(id)
             },
-            include: {
-                Socials: true
+            select: {
+                id: true,
+                name: true,
+                username: true,
+                email: true,
+                github: true,
+                bannerColor: true,
+                about: true,
+                profession: true,
+                avatar: true,
+                createdAt: true,
+                Socials: {
+                    select: {
+                        id: true,
+                        type: true,
+                        handle: true
+                    }
+                },
+                Links: {
+                    select: {
+                        id: true,
+                        title: true,
+                        url: true
+                    }
+                },
+                Projects: true
             }
+
         })
 
         if (!user) {
-            return res.json({status: 404, message: 'User not found!!'})
+            return res.json({ status: 404, message: 'User not found!!' })
         }
-        return res.json({status: 200, message: 'User fetched successfully!!', data: user})
+        return res.json({ status: 200, message: 'User fetched successfully!!', data: user })
     } catch (error) {
         console.log(error)
     }
 }
 
 export const updateUser = async (req, res) => {
-    const {id} = req.params
-    const {name, email, github, bannerColor, about, profession} = req.body
+    const { id } = req.params
+    const { name, email, github, bannerColor, about, profession } = req.body
     try {
         const findUser = await prisma.user.findUnique({
             where: {
@@ -80,7 +125,7 @@ export const updateUser = async (req, res) => {
             }
         })
         if (!findUser) {
-            return res.json({status: 404, message: 'User not found!!'})
+            return res.json({ status: 404, message: 'User not found!!' })
         }
         const updatedUser = await prisma.user.update({
             where: {
@@ -93,17 +138,17 @@ export const updateUser = async (req, res) => {
                 bannerColor: bannerColor,
                 about: about,
                 profession: profession,
-                avatar: "https://avatars.githubusercontent.com/"+github,
+                avatar: "https://avatars.githubusercontent.com/" + github,
             }
         })
-        return res.json({status: 200, message: 'User updated successfully!!', data: updatedUser})
+        return res.json({ status: 200, message: 'User updated successfully!!', data: updatedUser })
     } catch (error) {
         console.log(error)
     }
 }
 
 export const deleteUser = async (req, res) => {
-    const {id} = req.params
+    const { id } = req.params
     try {
         const findUser = await prisma.user.findUnique({
             where: {
@@ -111,14 +156,14 @@ export const deleteUser = async (req, res) => {
             }
         })
         if (!findUser) {
-            return res.json({status: 404, message: 'User not found!!'})
+            return res.json({ status: 404, message: 'User not found!!' })
         }
         const deletedUser = await prisma.user.delete({
             where: {
                 id: Number(id)
             }
         })
-        return res.json({status: 200, message: 'User deleted successfully!!', data: deletedUser})
+        return res.json({ status: 200, message: 'User deleted successfully!!', data: deletedUser })
     } catch (error) {
         console.log(error)
     }

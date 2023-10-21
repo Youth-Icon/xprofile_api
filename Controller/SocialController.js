@@ -1,12 +1,13 @@
 import prisma from '../DB/db.config.js'
 
 export const createSocials = async (req, res) => {
+    const {id} = req.params
     const { userId, type, handle } = req.body
 
     try {
         const findUser = await prisma.user.findUnique({
             where: {
-                id: Number(userId)
+                id: Number(id)
             }
         })
         if (!findUser) {
@@ -16,7 +17,7 @@ export const createSocials = async (req, res) => {
         // Find SOcial if it exists
         const findSocial = await prisma.socials.findFirst({
             where: {
-                userId: Number(userId),
+                userId: Number(id),
                 type: type
             }
         })
