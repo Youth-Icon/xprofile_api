@@ -1,12 +1,11 @@
 import { Router } from "express";
 import UserRoutes from './userRoute.js'
+import SocialRoute from './socialRoute.js'
 
 const router = Router()
 
-router.use('/v1/register', UserRoutes)
-router.use('/v1/users', UserRoutes)
-router.use('/v1/user', UserRoutes)
-router.use('/v1/DNdelete', UserRoutes)
-router.use('/v1/DNupdate', UserRoutes)
+router.use('/v1/profile', UserRoutes)
+
+router.use('/v1/socials', SocialRoute)
 
 export default router
