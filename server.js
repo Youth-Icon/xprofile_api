@@ -9,6 +9,10 @@ app.get("/", (req, res) => {
     res.send("Ayo👋! Hello World")
 })
 
+// Middleware
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+
 // Route File
 app.use(routes)
 
