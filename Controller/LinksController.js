@@ -152,3 +152,40 @@ export const getLink = async (req, res) => {
         console.log(error)
     }
 }
+
+// increment link click count on visit
+export const incrementLinkClick = async (req, res) => {
+    const { id, linkId } = req.params
+    try {
+        const findUser = await prisma.user.findUnique({
+            where: {
+                id: Number(id)
+            }
+        })
+        if (!findUser) {
+            return res.json({ status: 404, message: 'User not found!!' })
+        }
+
+        const findLink = await prisma.links.findUnique({
+            where: {
+                id: Number(linkId)
+            }
+        })
+        if (!findLink) {
+            return res.json({ status: 404, message: 'Link not found!!' })
+        }
+        const updateLink = await prisma.links.update({
+            where: {
+                id: Number(linkId)
+            },
+            data: {
+                clicks: {
+                    increment: 1
+                }
+            }
+        })
+        return res.json({ status: 200, message: 'Link click count incremented successfully!!', data: updateLink })
+    } catch (error) {
+        console.log(error)
+    }
+}

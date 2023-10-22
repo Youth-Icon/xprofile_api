@@ -80,6 +80,9 @@ export const getSocial = async (req, res) => {
                 type: type
             }
         })
+        if (!social) {
+            return res.json({ status: 404, message: 'Social not found!! (hint: use TYPE query)' })
+        }
         return res.json({ status: 200, message: 'Social fetched successfully!!', data: social })
     } catch (error) {
         console.log(error)
@@ -131,6 +134,35 @@ export const updateSocial = async (req, res) => {
             }
         })
         return res.json({ status: 200, message: 'Social updated successfully!!' })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+// increment social clicks by 1
+export const incrementSocialClicks = async (req, res) => {
+    const { id, type } = req.params
+    try {
+        const findUser = await prisma.user.findUnique({
+            where: {
+                id: Number(id)
+            }
+        })
+        if (!findUser) {
+            return res.json({ status: 404, message: 'User not found!!' })
+        }
+        const social = await prisma.socials.updateMany({
+            where: {
+                userId: Number(id),
+                type: type
+            },
+            data: {
+                clicks: {
+                    increment: 1
+                }
+            }
+        })
+        return res.json({ status: 200, message: 'Social clicks incremented successfully!!', data: social })
     } catch (error) {
         console.log(error)
     }
