@@ -50,15 +50,16 @@ model Links {
 }
 
 model Projects {
-  id          Int     @id @default(autoincrement())
-  user        User    @relation(fields: [userId], references: [id])
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [userId], references: [id])
   userId      Int
   title       String
   description String?
   repoLink    String?
-  webUrl      String
+  webUrl      String?
+  tags        String[]
   language    String
-  upVote      Int     @default(0)
+  upVote      Int      @default(0)
 }
 
 model Message {
