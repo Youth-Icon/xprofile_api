@@ -42,7 +42,19 @@ export const createUsers = async (req, res) => {
 
 export const getUsers = async (req, res) => {
     try {
+        let page = Number(req.query.page) || 1
+        let limit = Number(req.query.limit) || 10
+        
+        if (page <= 0) {
+            page = 1
+        }
+        if (limit <= 0 || limit > 20) {
+            limit = 10
+        }
+        const offset = (page - 1) * limit
         const users = await prisma.user.findMany({
+            skip: offset,
+            take: limit,
             select: {
                 _count: {
                     select: {
@@ -63,7 +75,13 @@ export const getUsers = async (req, res) => {
                 createdAt: true
             }
         });
-        return res.json({ status: 200, xprofiles: users.length, data: users })
+
+        // get current user count
+        const tCount = await prisma.user.count()
+        const totalPages = Math.ceil(tCount / limit)
+        return res.json({ status: 200, xprofiles: users.length, data: users, meta: {
+            totalPages, currentPage: page, limit: limit
+        } })
     } catch (error) {
         console.log(error)
     }
